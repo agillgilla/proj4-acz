@@ -203,8 +203,8 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	}
 	const float k = (n - 1) / 2.0;
 	float kernel[n * n];
-	for (unsigned j = 0; j < n; j++) {
-		for (unsigned i = 0; i < n; i++) {
+	for (unsigned i = 0; i < n; i++) {
+		for (unsigned j = 0; j < n; j++) {
 			kernel[j + i*n] = exp(-0.5 * ((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0)) / (sigma * sigma))) / (2 * M_PI * sigma * sigma);
 		}
 	}
