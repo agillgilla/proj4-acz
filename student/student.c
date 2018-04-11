@@ -283,14 +283,14 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
 	const int half = z / 2;
 	float min = FLT_MAX, max = -FLT_MAX;
 	if (normalize) {
-			#pragma omp for collapse(2)
+			//#pragma omp for collapse(2)
     		for (int m = half; m < width - half; m++) {
         		for (int n = half; n < height - half; n++) {
             			pixel = 0.0;
             			size_t c = 0;
 
             			for (int i = -half; i <= half; i++) {
-            				//#pragma omp for reduction(+ : pixel)
+            				#pragma omp for reduction(+ : pixel)
                 			for (int j = -half; j <= half; j++) {
                 	    			pixel += input[((n - j) * width + m - i) / width][((n - j) * width + m - i) % width] * kernel[c];
                 	    			c++;
@@ -305,12 +305,13 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
         		}
     		}
   	}
-  	#pragma omp for collapse(2)
+  	//#pragma omp for collapse(2)
 	for (int m = half; m < width - half; m++) {
 		for (int n = half; n < height - half; n++) {
 			pixel = 0.0;
 			size_t c = 0;
 			for (int i = -half; i <= half; i++) {
+				#pragma omp for reduction(+ : pixel)
 				for (int j = -half; j <= half; j++) {
 					pixel += input[((n - j) * width + m - i) / width][((n - j) * width + m - i) % width] * kernel[c];
 					c++;
