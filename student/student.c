@@ -207,7 +207,7 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	float kernel[n * n];
 	for (unsigned i = 0; i < n; i++) {
 		for (unsigned j = 0; j < n; j++) {
-			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0)) / two_sgma_sqrd)) / guassian_constant;
+			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0))) / two_sgma_sqrd) / guassian_constant;
 		}
 	}
 	convolution(input, output, kernel, width, height, n, true);
