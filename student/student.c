@@ -258,8 +258,9 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	const float two_sgma_sqrd = (2 * sigma * sigma);
 	float kernel[n * n];
 
-	#pragma omp parallel for	
+		
 	for (unsigned j = 0; j < n; j++) {
+		#pragma omp parallel for
 		for (unsigned i = 0; i < n; i++) {
 			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0))) / two_sgma_sqrd) / two_pi_sgma_sqrd;
 		}
