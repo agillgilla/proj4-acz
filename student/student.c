@@ -283,7 +283,7 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
 	const int half = z / 2;
 	float min = FLT_MAX, max = -FLT_MAX;
 	if (normalize) {
-			#pragma omp parallel for collapse(3)
+			#pragma omp parallel for collapse(2)
     		for (int m = half; m < width - half; m++) {
         		for (int n = half; n < height - half; n++) {
             			pixel = 0.0;
