@@ -276,8 +276,8 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 
 	end = clock();
 
-	double per_1 = (((double) (mid - start)) / CLOCKS_PER_SEC) / time_total * 100;
-	double per_2 = (((double) (end - mid)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_1 = (((double) (mid - start)) / CLOCKS_PER_SEC) / (((double) (end - start)) / CLOCKS_PER_SEC) * 100;
+	double per_2 = (((double) (end - mid)) / CLOCKS_PER_SEC) / (((double) (end - start)) / CLOCKS_PER_SEC) * 100;
 	fprintf(stderr, "%s" ,"///////////////////////\n");
 	fprintf(stderr, "%s" ,"Gaussian Time Analysis:\n");
 	fprintf(stderr, "%s %f %s" ,"Main Gaussian:", per_1, "%% \n");
