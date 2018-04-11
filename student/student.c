@@ -202,23 +202,24 @@ void canny_edge_detection(char* src, char* dst) {
 
 	end = clock();
 	double time_total = (((double) (end - start)) / CLOCKS_PER_SEC);
-	double time_1 = (((double) (time_one - start)) / CLOCKS_PER_SEC);
-	double time_2 = (((double) (time_two - time_one)) / CLOCKS_PER_SEC);
-	double time_3 = (((double) (time_three - time_two)) / CLOCKS_PER_SEC);
-	double time_4 = (((double) (time_four - time_three)) / CLOCKS_PER_SEC);
-	double time_5 = (((double) (time_five - time_four)) / CLOCKS_PER_SEC);
-	double time_6 = (((double) (time_six - time_five)) / CLOCKS_PER_SEC);
-	double time_7 = (((double) (time_seven - time_six)) / CLOCKS_PER_SEC);
-	double time_8 = (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC);
+	double per_1 = (((double) (time_one - start)) / CLOCKS_PER_SEC) / time_total;
+	double per_2 = (((double) (time_two - time_one)) / CLOCKS_PER_SEC) / time_total;
+	double per_3 = (((double) (time_three - time_two)) / CLOCKS_PER_SEC) / time_total;
+	double per_4 = (((double) (time_four - time_three)) / CLOCKS_PER_SEC) / time_total;
+	double per_5 = (((double) (time_five - time_four)) / CLOCKS_PER_SEC) / time_total;
+	double per_6 = (((double) (time_six - time_five)) / CLOCKS_PER_SEC) / time_total;
+	double per_7 = (((double) (time_seven - time_six)) / CLOCKS_PER_SEC) / time_total;
+	double per_8 = (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC) / time_total;
+	fprintf(stderr, "%s", "=============================================\n");
 	fprintf(stderr, "%s %f %s" ,"Total process took:", time_total, "\n");
-	fprintf(stderr, "%s %f %s" ,"Setup:", time_1, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Allocate Read:", time_2, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Execute Read and Setup Write:", time_3, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Allocate Write:", time_4, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Guassian:", time_5, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Intensity Gradients:", time_6, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Non-maxium Suppression:", time_7, "%%\n");
-	fprintf(stderr, "%s %f %s" ,"Hysteresis:", time_8, "%%\n");
+	fprintf(stderr, "%s %f %s" ,"Setup:", per_1, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Allocate Read:", per_2, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Execute Read and Setup Write:", per_3, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Allocate Write:", per_4, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Guassian:", per_5, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Intensity Gradients:", per_6, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Non-maxium Suppression:", per_7, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Hysteresis:", per_8, "%% \n");
 }
 
 
