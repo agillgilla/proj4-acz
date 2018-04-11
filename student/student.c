@@ -282,7 +282,7 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	fprintf(stderr, "%s" ,"Gaussian Time Analysis:\n");
 	fprintf(stderr, "%s %f %s" ,"Main Gaussian:", per_1, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Convolution:", per_2, "%% \n");
-	fprintf(stderr, "%s" ,"\\\\\\\\\\\\\\\\\\\\\\\\ \n");
+	fprintf(stderr, "%s" ,"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \n");
 }
 
 
