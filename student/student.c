@@ -213,7 +213,7 @@ void canny_edge_detection(char* src, char* dst) {
 	double per_6 = (((double) (time_six - time_five)) / CLOCKS_PER_SEC) / time_total * 100;
 	double per_7 = (((double) (time_seven - time_six)) / CLOCKS_PER_SEC) / time_total * 100;
 	double per_8 = (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC) / time_total * 100;
-	double per_8 = (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_9 = (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC) / time_total * 100;
 	fprintf(stderr, "%s", "=============================================\n");
 	fprintf(stderr, "%s %f %s" ,"Total process took:", time_total, "\n");
 	fprintf(stderr, "%s %f %s" ,"Setup:", per_1, "%% \n");
