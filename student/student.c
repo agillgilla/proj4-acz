@@ -222,7 +222,7 @@ void canny_edge_detection(char* src, char* dst) {
 	fprintf(stderr, "%s %f %s" ,"Allocate Write:", per_4, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Guassian:", per_5, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Intensity Gradients:", per_6, "%% \n");
-	fprintf(stderr, "%s %f %s" ,"Non-maxium Suppression:", per_7, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Non-maximum Suppression:", per_7, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Hysteresis:", per_8, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Cleanup:", per_9, "%% \n");
 }
@@ -286,8 +286,9 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
         		for (int n = half; n < height - half; n++) {
             			float pixel = 0.0;
             			size_t c = 0;
+            			#pragma omp for reduction(+ : pixel)
             			for (int i = -half; i <= half; i++) {
-            				#pragma omp parallel for reduction(+ : pixel)
+            				
                 			for (int j = -half; j <= half; j++) {
                 	    			pixel += input[((n - j) * width + m - i) / width][((n - j) * width + m - i) % width] * kernel[c];
                 	    			c++;
