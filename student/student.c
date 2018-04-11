@@ -305,9 +305,10 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
         		}
     		}
   	}
+  	#pragma omp for collapse(2)
 	for (int m = half; m < width - half; m++) {
 		for (int n = half; n < height - half; n++) {
-			float pixel = 0.0;
+			pixel = 0.0;
 			size_t c = 0;
 			for (int i = -half; i <= half; i++) {
 				for (int j = -half; j <= half; j++) {
