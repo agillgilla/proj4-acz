@@ -166,7 +166,7 @@ void canny_edge_detection(char* src, char* dst) {
 	//The four steps for the canny edge detection.
 	gaussian_filter(row_pointers, output_pointers, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 1.0);
 	time_five = clock();
-	//fprintf(stderr, "%s %f %s" ,"Guassian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Gaussian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
 	
 	intensity_gradients(output_pointers, Gx_applied, Gy_applied, G, dir, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr));
 	time_six = clock();
@@ -220,7 +220,7 @@ void canny_edge_detection(char* src, char* dst) {
 	fprintf(stderr, "%s %f %s" ,"Allocate Read:", per_2, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Execute Read and Setup Write:", per_3, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Allocate Write:", per_4, "%% \n");
-	fprintf(stderr, "%s %f %s" ,"Guassian:", per_5, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Gaussian:", per_5, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Intensity Gradients:", per_6, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Non-maximum Suppression:", per_7, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Hysteresis:", per_8, "%% \n");
@@ -258,9 +258,9 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	const float two_sgma_sqrd = (2 * sigma * sigma);
 	float kernel[n * n];
 
-		
+	#pragma omp parallel for collapse(2)
 	for (unsigned j = 0; j < n; j++) {
-		#pragma omp parallel for
+		
 		for (unsigned i = 0; i < n; i++) {
 			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0))) / two_sgma_sqrd) / two_pi_sgma_sqrd;
 		}
@@ -284,14 +284,14 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
 	float min = FLT_MAX, max = -FLT_MAX;
 	if (normalize) {
 			//#pragma omp for collapse(2)
-    		for (int m = half; m < width - half; m++) {
+			for (int j = -half; j <= half; j++) {
         		for (int n = half; n < height - half; n++) {
             			pixel = 0.0;
             			size_t c = 0;
 
             			for (int i = -half; i <= half; i++) {
-            				#pragma omp for reduction(+ : pixel)
-                			for (int j = -half; j <= half; j++) {
+            				//#pragma omp for reduction(+ : pixel)
+                			for (int m = half; m < width - half; m++) {
                 	    			pixel += input[((n - j) * width + m - i) / width][((n - j) * width + m - i) % width] * kernel[c];
                 	    			c++;
                 			}
@@ -306,13 +306,13 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
     		}
   	}
   	//#pragma omp for collapse(2)
-	for (int m = half; m < width - half; m++) {
+  	for (int j = -half; j <= half; j++) {
 		for (int n = half; n < height - half; n++) {
 			pixel = 0.0;
 			size_t c = 0;
 			for (int i = -half; i <= half; i++) {
-				#pragma omp for reduction(+ : pixel)
-				for (int j = -half; j <= half; j++) {
+				//#pragma omp for reduction(+ : pixel)
+				for (int m = half; m < width - half; m++) {
 					pixel += input[((n - j) * width + m - i) / width][((n - j) * width + m - i) % width] * kernel[c];
 					c++;
 				}
