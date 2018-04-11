@@ -96,7 +96,7 @@
     Finally once these are complete the actual write will be performed.
 */
 void canny_edge_detection(char* src, char* dst) {
-	clock_t start, end, time_one, time_two, time_three, time_four, time_five, time_six, time_seven, time_eight;
+	clock_t start, end, time_one, time_two, time_three, time_four, time_five, time_six, time_seven, time_eight, time_nine;
 
 	start = clock();
 
@@ -166,19 +166,19 @@ void canny_edge_detection(char* src, char* dst) {
 	//The four steps for the canny edge detection.
 	gaussian_filter(row_pointers, output_pointers, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 1.0);
 	time_five = clock();
-	fprintf(stderr, "%s %f %s" ,"Guassian write took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
+	fprintf(stderr, "%s %f %s" ,"Guassian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
 	
 	intensity_gradients(output_pointers, Gx_applied, Gy_applied, G, dir, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr));
 	time_six = clock();
-	fprintf(stderr, "%s %f %s" ,"Intensity gradients write took:", (((double) (time_six - time_five)) / CLOCKS_PER_SEC), "\n");
+	fprintf(stderr, "%s %f %s" ,"Intensity gradients took:", (((double) (time_six - time_five)) / CLOCKS_PER_SEC), "\n");
 	
 	non_maximum_suppression(nms, G, dir, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr));
 	time_seven = clock();
-	fprintf(stderr, "%s %f %s" ,"Non-maximum suppression write took:", (((double) (time_seven - time_six)) / CLOCKS_PER_SEC), "\n");
+	fprintf(stderr, "%s %f %s" ,"Non-maximum suppression took:", (((double) (time_seven - time_six)) / CLOCKS_PER_SEC), "\n");
 	
 	hysteresis(final_output, nms, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 105, 45);
 	time_eight = clock();
-	fprintf(stderr, "%s %f %s" ,"Hysteresis write took:", (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC), "\n");
+	fprintf(stderr, "%s %f %s" ,"Hysteresis took:", (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC), "\n");
 	
 	free(G);
 	free(dir);
@@ -200,16 +200,20 @@ void canny_edge_detection(char* src, char* dst) {
 	fclose(src_file);
 	fclose(dst_file);
 
+	time_nine = clock();
+	fprintf(stderr, "%s %f %s" ,"Cleanup took:", (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC), "\n");
+
 	end = clock();
 	double time_total = (((double) (end - start)) / CLOCKS_PER_SEC);
-	double per_1 = (((double) (time_one - start)) / CLOCKS_PER_SEC) / time_total;
-	double per_2 = (((double) (time_two - time_one)) / CLOCKS_PER_SEC) / time_total;
-	double per_3 = (((double) (time_three - time_two)) / CLOCKS_PER_SEC) / time_total;
-	double per_4 = (((double) (time_four - time_three)) / CLOCKS_PER_SEC) / time_total;
-	double per_5 = (((double) (time_five - time_four)) / CLOCKS_PER_SEC) / time_total;
-	double per_6 = (((double) (time_six - time_five)) / CLOCKS_PER_SEC) / time_total;
-	double per_7 = (((double) (time_seven - time_six)) / CLOCKS_PER_SEC) / time_total;
-	double per_8 = (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC) / time_total;
+	double per_1 = (((double) (time_one - start)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_2 = (((double) (time_two - time_one)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_3 = (((double) (time_three - time_two)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_4 = (((double) (time_four - time_three)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_5 = (((double) (time_five - time_four)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_6 = (((double) (time_six - time_five)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_7 = (((double) (time_seven - time_six)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_8 = (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_8 = (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC) / time_total * 100;
 	fprintf(stderr, "%s", "=============================================\n");
 	fprintf(stderr, "%s %f %s" ,"Total process took:", time_total, "\n");
 	fprintf(stderr, "%s %f %s" ,"Setup:", per_1, "%% \n");
@@ -220,6 +224,7 @@ void canny_edge_detection(char* src, char* dst) {
 	fprintf(stderr, "%s %f %s" ,"Intensity Gradients:", per_6, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Non-maxium Suppression:", per_7, "%% \n");
 	fprintf(stderr, "%s %f %s" ,"Hysteresis:", per_8, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Cleanup:", per_9, "%% \n");
 }
 
 
