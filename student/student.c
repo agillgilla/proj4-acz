@@ -277,6 +277,7 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
     but for our purposes we can think of it as a transformation
     on the input using the kernel.
 */
+float pixel;
 void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsigned width, const unsigned height, const int z, const bool normalize) {
 
 	const int half = z / 2;
@@ -284,9 +285,9 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
 	if (normalize) {
     		for (int m = half; m < width - half; m++) {
         		for (int n = half; n < height - half; n++) {
-            			float pixel = 0.0;
+            			pixel = 0.0;
             			size_t c = 0;
-            			
+
             			for (int i = -half; i <= half; i++) {
             				#pragma omp for reduction(+ : pixel)
                 			for (int j = -half; j <= half; j++) {
