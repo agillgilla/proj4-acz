@@ -127,7 +127,7 @@ void canny_edge_detection(char* src, char* dst) {
 	setup_info(png_read_ptr, read_info_ptr);
 
 	time_one = clock();
-	fprintf(stderr, "%s %f" ,"Setup time took:", (((double) (end - start)) / CLOCKS_PER_SEC));
+	fprintf(stderr, "%s %f %s" ,"Setup time took:", (((double) (time_one - start)) / CLOCKS_PER_SEC), "\n");
 
 	//Allocate memory to read the image data into
 	png_bytep row_pointers[png_get_image_height(png_read_ptr, read_info_ptr)];
