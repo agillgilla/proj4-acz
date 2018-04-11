@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <png.h>
 
-bool is_correct (char *ref, char *naive, char *student);
+bool is_correct (char *ref, char *naive, char *student, int picnum);
 void setup_read(FILE* file, png_structp *png_read_ptr, png_infop *read_info_ptr, png_infop *read_end_ptr);
 void setup_info(png_structp png_read_ptr, png_infop read_info_ptr);
 void allocate_read_mem(png_structp png_read_ptr, png_bytep *row_pointers, unsigned height, unsigned width);
@@ -19,7 +19,7 @@ char *student[30] = {"student/out/canny_baboon.png" ,"student/out/canny_balloons
 int main(int argc, char*argv[]) {
 	bool valid = true;
 	for (int i = 0; i < 30; i++) {
-		valid = is_correct(refs[i], naive[i], student[i]);
+		valid = is_correct(refs[i], naive[i], student[i], i + 1) && valid;
 	}
 	if (!valid) {
 		printf("Correctness Check Failed.\n");
@@ -31,9 +31,11 @@ int main(int argc, char*argv[]) {
 }
 
 
-bool is_correct (char *ref, char *naive, char *student) {
+bool is_correct (char *ref, char *naive, char *student, int picnum) {
 	unsigned naive_total = 0;
 	unsigned student_total = 0;
+	unsigned nonblacks_total = 0;
+	unsigned nonblackn_total = 0;
 	FILE *ref_file = fopen(ref, "rb");
 	if (ref_file == NULL) {
 		fprintf(stderr, "Correctness Check Failed. Ref file %s not found\n", ref);
@@ -76,11 +78,9 @@ bool is_correct (char *ref, char *naive, char *student) {
 
 	png_bytep student_pointers[png_get_image_height(read_student_ptr, info_student_ptr)];
 	allocate_read_mem(read_student_ptr, student_pointers, png_get_image_height(read_student_ptr, info_student_ptr), png_get_rowbytes(read_student_ptr, info_student_ptr));
-
 	execute_read(read_ref_ptr, info_ref_ptr, end_ref_ptr, ref_pointers);
 	execute_read(read_naive_ptr, info_naive_ptr, end_naive_ptr, naive_pointers);
 	execute_read(read_student_ptr, info_student_ptr, end_student_ptr, student_pointers);
-
 	for (int i = 0; i < png_get_image_height(read_ref_ptr, info_ref_ptr); i++) {
 		for (int j = 0; j < png_get_rowbytes(read_ref_ptr, info_ref_ptr); j++) {
 			if ((!ref_pointers[i][j]) != (!naive_pointers[i][j])) {
@@ -88,6 +88,12 @@ bool is_correct (char *ref, char *naive, char *student) {
 			}
 			if ((!ref_pointers[i][j]) != (!student_pointers[i][j])) {
 				student_total++;
+			}
+			if (student_pointers[i][j] != 0) {
+				nonblacks_total++;
+			}
+			if (naive_pointers[i][j] != 0) {
+				nonblackn_total++;
 			}
 		}
 	}
@@ -104,10 +110,15 @@ bool is_correct (char *ref, char *naive, char *student) {
 	fclose(ref_file);
 	fclose(naive_file);
 	fclose(student_file);
-
+	
+	if (nonblacks_total < (nonblackn_total * 2) / 3) {
+		fprintf(stderr, "Failed [%i]: %s. Image is just black! (# non-black pixels Student: %i Naive %i)\n", picnum, ref, nonblacks_total, nonblackn_total);
+		return false;
+	}
 	if (student_total <= (naive_total * 105) / 100) {
 		return true;
 	}
+	fprintf(stderr, "Failed [%i]: %s\n", picnum, ref);
 	return false;
 }
 
