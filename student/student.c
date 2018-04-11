@@ -239,6 +239,10 @@ void canny_edge_detection(char* src, char* dst) {
     C comments can't do the formula format justice
 */
 void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, const unsigned height, const float sigma) {
+	
+	time_t start, mid, end;
+	start = clock();
+
 	unsigned n;
 	if (sigma < 0.5) {
 		n = 3;
@@ -266,7 +270,19 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 		}
 	}
 
+	mid = clock();
+
 	convolution(input, output, kernel, width, height, n, true);
+
+	end = clock();
+
+	double per_1 = (((double) (mid - start)) / CLOCKS_PER_SEC) / time_total * 100;
+	double per_2 = (((double) (end - mid)) / CLOCKS_PER_SEC) / time_total * 100;
+	fprintf(stderr, "%s" ,"///////////////////////\n");
+	fprintf(stderr, "%s" ,"Gaussian Time Analysis:\n");
+	fprintf(stderr, "%s %f %s" ,"Main Gaussian:", per_1, "%% \n");
+	fprintf(stderr, "%s %f %s" ,"Convolution:", per_2, "%% \n");
+	fprintf(stderr, "%s" ,"\\\\\\\\\\\\\\\\\\\\\\\\ \n");
 }
 
 
