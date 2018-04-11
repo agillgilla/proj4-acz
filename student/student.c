@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <png.h>
+#include <time.h>
 #include <x86intrin.h>
 #include <omp.h>
 #include "ced.h"
@@ -95,6 +96,10 @@
     Finally once these are complete the actual write will be performed.
 */
 void canny_edge_detection(char* src, char* dst) {
+	clock_t start, end, time_one, time_two, time_three, time_four, time_five;
+
+	start = clock();
+
 	char header[8];
 	png_structp png_read_ptr;
 	png_infop read_info_ptr;
@@ -121,6 +126,8 @@ void canny_edge_detection(char* src, char* dst) {
 	//Determines image features such as height and width
 	setup_info(png_read_ptr, read_info_ptr);
 
+	time_one = clock();
+	fprintf(stderr, "%s %d" ,"Setup time took:", (((double) (end - start)) / CLOCKS_PER_SEC));
 
 	//Allocate memory to read the image data into
 	png_bytep row_pointers[png_get_image_height(png_read_ptr, read_info_ptr)];
