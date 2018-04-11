@@ -127,14 +127,14 @@ void canny_edge_detection(char* src, char* dst) {
 	setup_info(png_read_ptr, read_info_ptr);
 
 	time_one = clock();
-	fprintf(stderr, "%s %f %s" ,"Setup time took:", (((double) (time_one - start)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Setup time took:", (((double) (time_one - start)) / CLOCKS_PER_SEC), "\n");
 
 	//Allocate memory to read the image data into
 	png_bytep row_pointers[png_get_image_height(png_read_ptr, read_info_ptr)];
 	allocate_read_mem(png_read_ptr, row_pointers, png_get_image_height(png_read_ptr, read_info_ptr), png_get_rowbytes(png_read_ptr, read_info_ptr));
 
 	time_two = clock();
-	fprintf(stderr, "%s %f %s" ,"Allocate read took:", (((double) (time_two - time_one)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Allocate read took:", (((double) (time_two - time_one)) / CLOCKS_PER_SEC), "\n");
 
 	//Execute the actual read
 	execute_read(png_read_ptr, read_info_ptr, read_end_ptr, row_pointers);
@@ -151,7 +151,7 @@ void canny_edge_detection(char* src, char* dst) {
 	png_bytep final_output[png_get_image_height(png_read_ptr, read_info_ptr)];
 
 	time_three = clock();
-	fprintf(stderr, "%s %f %s" ,"Execute read and setup write took:", (((double) (time_three - time_two)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Execute read and setup write took:", (((double) (time_three - time_two)) / CLOCKS_PER_SEC), "\n");
 
 	//Allocate the actual memory
 	allocate_write_mem(png_write_ptr, output_pointers, Gy_applied, Gx_applied, nms, final_output, png_get_image_height(png_read_ptr, read_info_ptr), png_get_rowbytes(png_read_ptr, read_info_ptr));
@@ -161,24 +161,24 @@ void canny_edge_detection(char* src, char* dst) {
 	float *dir = calloc(png_get_rowbytes(png_read_ptr, read_info_ptr) * png_get_image_height(png_read_ptr, read_info_ptr), sizeof(float));
 
 	time_four = clock();
-	fprintf(stderr, "%s %f %s" ,"Allocate write took:", (((double) (time_four - time_three)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Allocate write took:", (((double) (time_four - time_three)) / CLOCKS_PER_SEC), "\n");
 
 	//The four steps for the canny edge detection.
 	gaussian_filter(row_pointers, output_pointers, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 1.0);
 	time_five = clock();
-	fprintf(stderr, "%s %f %s" ,"Guassian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Guassian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
 	
 	intensity_gradients(output_pointers, Gx_applied, Gy_applied, G, dir, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr));
 	time_six = clock();
-	fprintf(stderr, "%s %f %s" ,"Intensity gradients took:", (((double) (time_six - time_five)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Intensity gradients took:", (((double) (time_six - time_five)) / CLOCKS_PER_SEC), "\n");
 	
 	non_maximum_suppression(nms, G, dir, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr));
 	time_seven = clock();
-	fprintf(stderr, "%s %f %s" ,"Non-maximum suppression took:", (((double) (time_seven - time_six)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Non-maximum suppression took:", (((double) (time_seven - time_six)) / CLOCKS_PER_SEC), "\n");
 	
 	hysteresis(final_output, nms, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 105, 45);
 	time_eight = clock();
-	fprintf(stderr, "%s %f %s" ,"Hysteresis took:", (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Hysteresis took:", (((double) (time_eight - time_seven)) / CLOCKS_PER_SEC), "\n");
 	
 	free(G);
 	free(dir);
@@ -201,7 +201,7 @@ void canny_edge_detection(char* src, char* dst) {
 	fclose(dst_file);
 
 	time_nine = clock();
-	fprintf(stderr, "%s %f %s" ,"Cleanup took:", (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC), "\n");
+	//fprintf(stderr, "%s %f %s" ,"Cleanup took:", (((double) (time_nine - time_eight)) / CLOCKS_PER_SEC), "\n");
 
 	end = clock();
 	double time_total = (((double) (end - start)) / CLOCKS_PER_SEC);
@@ -257,9 +257,12 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 	const float two_pi_sgma_sqrd = (2 * M_PI * sigma * sigma);
 	const float two_sgma_sqrd = (2 * sigma * sigma);
 	float kernel[n * n];
-	for (unsigned j = 0; j < n; j++) {
-		for (unsigned i = 0; i < n; i++) {
-			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0))) / two_sgma_sqrd) / two_pi_sgma_sqrd;
+	#pragma omp parallel {
+		#pragma omp for
+		for (unsigned j = 0; j < n; j++) {
+			for (unsigned i = 0; i < n; i++) {
+				kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0))) / two_sgma_sqrd) / two_pi_sgma_sqrd;
+			}
 		}
 	}
 	convolution(input, output, kernel, width, height, n, true);
