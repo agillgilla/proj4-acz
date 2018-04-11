@@ -202,11 +202,12 @@ void gaussian_filter(png_bytep *input, png_bytep *output, const unsigned width, 
 		n = 13;
 	}
 	const float k = (n - 1) / 2.0;
-	const float guassian_constant = (2 * M_PI * sigma * sigma);
+	const float two_pi_sgma_sqrd = (2 * M_PI * sigma * sigma);
+	const float two_sgma_sqrd = (2 * sigma * sigma);
 	float kernel[n * n];
 	for (unsigned i = 0; i < n; i++) {
 		for (unsigned j = 0; j < n; j++) {
-			kernel[j + i*n] = exp(-0.5 * ((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0)) / (sigma * sigma))) / guassian_constant;
+			kernel[j + i*n] = exp(((pow((i - (k + 1)), 2.0) + pow((j - (k + 1)), 2.0)) / two_sgma_sqrd)) / guassian_constant;
 		}
 	}
 	convolution(input, output, kernel, width, height, n, true);
