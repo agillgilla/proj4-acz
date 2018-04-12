@@ -370,6 +370,7 @@ void intensity_gradients(png_bytep *output, png_bytep *Gx_applied, png_bytep *Gy
     dir) it is a local maximum. If it is the value remains on, otherwise it is turned off.
 */
 void non_maximum_suppression(png_bytep *nms, float *G, float *dir, const unsigned width, const unsigned height) {
+	#pragma omp parallel for
 	for (int i = 1; i < width - 1; i++) {
 		for (int j = 1; j < height - 1; j++) {
 			int c = i + width * j;
