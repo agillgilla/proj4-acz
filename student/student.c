@@ -354,8 +354,8 @@ void intensity_gradients(png_bytep *output, png_bytep *Gx_applied, png_bytep *Gy
 	convolution(output, Gx_applied, Gx, width, height, 3, false);
 	convolution(output, Gy_applied, Gx, width, height, 3, false);
 	#pragma omp parallel for
-	for (int i = 1; i < width - 1; i++) {
-		for (int j = 1; j < height - 1; j++) {
+	for (int j = 1; j < height - 1; j++) {
+		for (int i = 1; i < width - 1; i++) {
 			int c = i + width * j;
 			G[c] = hypot(Gx_applied[j][i], Gy_applied[j][i]);
 			dir[c] = (float)(fmod(atan2(Gy_applied[j][i], Gx_applied[j][i]) + M_PI, M_PI) / M_PI) * 8;  
