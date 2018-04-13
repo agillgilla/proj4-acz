@@ -164,7 +164,7 @@ void canny_edge_detection(char* src, char* dst) {
 	//fprintf(stderr, "%s %f %s" ,"Allocate write took:", (((double) (time_four - time_three)) / CLOCKS_PER_SEC), "\n");
 
 	//The four steps for the canny edge detection.
-	gaussian_filter(row_pointers, output_pointers, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), 1.0);
+	gaussian_filter(row_pointers, output_pointers, png_get_rowbytes(png_read_ptr, read_info_ptr), png_get_image_height(png_read_ptr, read_info_ptr), .49);
 	time_five = clock();
 	//fprintf(stderr, "%s %f %s" ,"Gaussian took:", (((double) (time_five - time_four)) / CLOCKS_PER_SEC), "\n");
 	
