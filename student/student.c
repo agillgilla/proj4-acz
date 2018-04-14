@@ -325,25 +325,31 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
             			pixels[(n - half) * pixels_width + (m - half)] = pixel;
         		}
     		}
-  	}
-  	//#pragma omp for collapse(2)
-  	#pragma omp parallel for reduction (+ : pixel)
-  	for (int m = half; m < width - half; m++) {
-  		for (int n = half; n < height - half; n++) {
-			pixel = 0.0;
-			size_t c = 0;
 
-			for (int i = -half; i <= half; i++) {
-			//#pragma omp for reduction(+ : pixel)
-				for (int j = -half; j <= half; j++) {
-					pixel += input[(n - j) + (m - i) / width][(m - i) % width] * kernel[c];
-					c++;
+    		#pragma omp parallel for
+		  	for (int m = half; m < width - half; m++) {
+		  		for (int n = half; n < height - half; n++) {
+					
+					output[n][m] = (png_byte) MAX_BRIGHTNESS * (pixels[(n - half) * pixels_width + (m - half)] - min) / (max - min);
 				}
 			}
-			if (normalize) {                
-				pixel = MAX_BRIGHTNESS * (pixel - min) / (max - min);
+  	} else {
+	  	//#pragma omp for collapse(2)
+	  	#pragma omp parallel for reduction (+ : pixel)
+	  	for (int m = half; m < width - half; m++) {
+	  		for (int n = half; n < height - half; n++) {
+				pixel = 0.0;
+				size_t c = 0;
+
+				for (int i = -half; i <= half; i++) {
+				//#pragma omp for reduction(+ : pixel)
+					for (int j = -half; j <= half; j++) {
+						pixel += input[(n - j) + (m - i) / width][(m - i) % width] * kernel[c];
+						c++;
+					}
+				}
+				output[n][m] = (png_byte) pixel;
 			}
-			output[n][m] = (png_byte) pixel;
 		}
 	}
 }
