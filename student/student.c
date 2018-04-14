@@ -322,7 +322,7 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
                 			max = pixel;
             			}
 
-            			pixels[n * pixels_width + m] = pixel;
+            			pixels[(m - half) * pixels_width + (n - half)] = pixel;
         		}
     		}
   	}
