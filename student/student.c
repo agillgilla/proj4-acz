@@ -333,6 +333,8 @@ void convolution(png_bytep *input, png_bytep *output, float *kernel, const unsig
 					output[n][m] = (png_byte) MAX_BRIGHTNESS * (pixels[(n - half) * pixels_width + (m - half)] - min) / (max - min);
 				}
 			}
+
+			free(pixels);
 			
   	} else {
 	  	//#pragma omp for collapse(2)
